@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "snarkjs": "^0.7.1",
+    "zkey-manager": "^0.1.2"
+  }
+}
