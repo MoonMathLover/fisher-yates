@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "snarkjs": "^0.7.1",
+    "zkey-manager": "^0.1.2"
+  },
+  "scripts": {
+    "compile": "yarn zkey-manager compile --config zkey.config.yml",
+    "download": "yarn zkey-manager downloadPtau --config zkey.config.yml",
+    "genZkeys": "yarn zkey-manager genZkeys --config zkey.config.yml",
+    "createProof": "yarn snarkjs groth16 fullprove input.json <path_to>.wasm <path_to>.zkey proof.json public.json"
+  }
+}
