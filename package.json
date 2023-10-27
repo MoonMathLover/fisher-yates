@@ -6,7 +6,7 @@
   "scripts": {
     "compile": "yarn zkey-manager compile --config zkey.config.yml",
     "download": "yarn zkey-manager downloadPtau --config zkey.config.yml",
-    "genZkey": "yarn zkey-manager downloadPtau --config zkey.config.yml",
+    "genZkeys": "yarn zkey-manager genZkeys --config zkey.config.yml",
     "createProof": "yarn snarkjs groth16 fullprove input.json <path_to>.wasm <path_to>.zkey proof.json public.json"
   }
 }

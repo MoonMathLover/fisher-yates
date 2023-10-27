@@ -10,11 +10,11 @@ out: "./artifacts"
 
 # Circom circuit config
 circuits:
-- template: "./circuits/shuffle.circom"
-  component: "Shuffle"
-  params: [50]
-  pubInputs: ["entropy"]
-
+- template: "./circuits/mainCircuit.circom"
+  type: "test"
+  component: "Main"
+  params: [10000]
+  pubInputs: ["entropy", "shuffleHistory"]
 
 # Powers of Tau ceremony file
 ptauFiles:

@@ -1,31 +1,56 @@
 pragma circom 2.0.0;
 
+include "../node_modules/circomlib/circuits/comparators.circom";
+include "./multiSelector.circom";
+include "./modulo.circom";
+
 template Shuffle(len) {
     signal input entropy;
-    // Assume `in_array` is an one-based numbering array
-    // signal input in_array[len];
-    signal output out_array[len];
+    signal input pivotIndex;
+    signal input oldArray[len];
+    signal input newArray[len];
     
-    // Test `entropy` is nonzero
-    signal inv_entropy;
-    inv_entropy <-- (entropy == 0) ? 0 : (1 / entropy);
-    0 === 1 - entropy * inv_entropy;
+    component nonZeroTest = IsZero();
+    nonZeroTest.in <== entropy;
+    nonZeroTest.out === 0;
     
-    var in_array[len];
-    for (var i = 0; i < (len - 1); i++) {
-        in_array[i] = i + 1; // one-based numbering
+    component lessThanTest = LessThan(252);
+    lessThanTest.in[0] <== pivotIndex;
+    lessThanTest.in[1] <== len;
+    lessThanTest.out === 1;
+    
+    component mod = Modulo();
+    mod.a <== entropy;
+    mod.b <== (len - pivotIndex);
+    
+    // Test the validity of swaping choosing by F-Y algorithm
+    var i = pivotIndex;
+    var j = pivotIndex + mod.c;
+    
+    component oldArrayAtI = MultiSelector(len);
+    for (var m = 0; m < len; m++) {
+        oldArrayAtI.array[m] <== oldArray[m];
     }
+    oldArrayAtI.index <== i;
     
-    for (var i = 0; i < (len - 1); i++) {
-        var j = i + entropy % (len - i);
-        
-        var temp = in_array[i];
-        in_array[i] = in_array[j];
-        in_array[j] = temp;
+    component oldArrayAtJ = MultiSelector(len);
+    for (var m = 0; m < len; m++) {
+        oldArrayAtJ.array[m] <== oldArray[m];
     }
+    oldArrayAtJ.index <== j;
     
-    for (var i = 0; i < (len - 1); i++) {
-        out_array[i] <-- in_array[i];
-        out_array[i] === out_array[i];
+    component newArrayAtI = MultiSelector(len);
+    for (var m = 0; m < len; m++) {
+        newArrayAtI.array[m] <== newArray[m];
     }
+    newArrayAtI.index <== i;
+    
+    component newArrayAtJ = MultiSelector(len);
+    for (var m = 0; m < len; m++) {
+        newArrayAtJ.array[m] <== newArray[m];
+    }
+    newArrayAtJ.index <== j;
+    
+    oldArrayAtI.elementAtIndex === newArrayAtJ.elementAtIndex;
+    oldArrayAtJ.elementAtIndex === newArrayAtI.elementAtIndex;
 }
