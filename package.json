@@ -6,6 +6,13 @@
     "zkey-manager": "https://github.com/a2468834/zkey-manager"
   },
   "scripts": {
-    "genInputJson": "node script/genInputJson.js 50 `head /dev/random | tr -dc a-f0-9 | head -c16`"
+    "fromAtoZ": "yarn genInputJson; yarn compile; yarn downloadPtau; yarn genZkeys; yarn genProofsl yarn genVerifierSol; yarn genSolCalldata",
+    "genInputJson": "node script/genInputJson.js `head /dev/random | tr -dc a-f0-9 | head -c16` 50 3 50",
+    "compile": "yarn zkey-manager compile -c zkey.config.yml",
+    "downloadPtau": "yarn zkey-manager downloadPtau -c zkey.config.yml -nc",
+    "genZkeys": "yarn zkey-manager genZkeys -c zkey.config.yml",
+    "genProofs": "yarn zkey-manager genProofs -c zkey.config.yml",
+    "genVerifierSol": "yarn snarkjs zkey export solidityverifier ./artifacts/Main_50-50_zkPlayground_groth16.final.zkey ./circom/Main_50-50_zkPlayground_groth16.verifier.sol",
+    "genSolCalldata": "yarn snarkjs zkey export soliditycalldata ./artifacts/Main_50-50_zkPlayground_groth16.public.json ./artifacts/Main_50-50_zkPlayground_groth16.proof.json"
   }
 }

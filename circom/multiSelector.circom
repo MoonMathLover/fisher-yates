@@ -9,24 +9,22 @@ template MultiSelector(len) {
     
     assert(index < len);
     
-    component equals[len];
+    signal equals[len];
     signal summation[len];
     
     for (var i = 0; i < len; i++) {
         // Check whether each `i` is equal to `index`
         
-        equals[i] = IsEqual();
-        equals[i].in[0] <== i;
-        equals[i].in[1] <== index;
+        equals[i] <== IsEqual()([i, index]);
         
         if (i == 0) {
-            summation[0] <==  (array[0] * equals[i].out);
+            summation[0] <== (array[0] * equals[i]);
         }
         else {
-            summation[i] <==  summation[i - 1] + (array[i] * equals[i].out);
+            summation[i] <== summation[i - 1] + (array[i] * equals[i]);
         }
     }
-
+    
     // Returns 0 + ... + item + ... + 0
     elementAtIndex <== summation[len - 1];
 }

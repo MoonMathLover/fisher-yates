@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-function stepwiseFisherYates(entropy, oldArray) {
+function stepwiseFisherYates(entropy, oldArray, extraRounds, maxExtraRounds) {
     if (entropy === 0) {
         console.error("Do not use zero as the entropy");
         process.exit(1);
@@ -10,35 +10,58 @@ function stepwiseFisherYates(entropy, oldArray) {
     const newArray = Array.from(oldArray);
     const stepwiseArray = {"arrayHistory": [], "pivotHistory": []};
     
-    for (let i = 0; i < newArray.length; i++) {
+    // Do the original F-Y shuffle
+    for (let i = 0; i < (newArray.length - 1); i++) {
         const before = Array.from(newArray);
-        const pivotIndex = i;
         
         stepwiseArray.arrayHistory.push(before);
-        stepwiseArray.pivotHistory.push(pivotIndex);
+        stepwiseArray.pivotHistory.push(i);
         
         const j = i + entropy % (newArray.length - i);
-        const temp = newArray[i];
-        newArray[i] = newArray[j];
-        newArray[j] = temp;
+        [newArray[j], newArray[i]] = [newArray[i], newArray[j]];
+    }
+    
+    // Do the extra rounds
+    for (let i = 0; i < extraRounds; i++) {
+        const before = Array.from(newArray);
+        
+        stepwiseArray.arrayHistory.push(before);
+        stepwiseArray.pivotHistory.push(i);
+        
+        const j = i + entropy % (newArray.length - i);
+        [newArray[j], newArray[i]] = [newArray[i], newArray[j]];
     }
     
     stepwiseArray.arrayHistory.push(newArray);
-    stepwiseArray.pivotHistory.push(newArray.length);
+    stepwiseArray.pivotHistory.push(null);
+    
+    // Fill up the rest of un-used elements
+    for (let i = 0; i < (maxExtraRounds - extraRounds); i++) {
+        stepwiseArray.arrayHistory.push([...Array(newArray.length)].map(x => 0));
+        stepwiseArray.pivotHistory.push(null);
+    }
     
     return stepwiseArray;
 }
 
 async function main() {
-    if (process.argv.length !== 4) {
-        console.error("Please run the script like $ node genInputJson.js <ARRAY_LEN> <ENTROPY_HEX_STR>");
-        process.exit(1)
+    if (process.argv.length !== 6) {
+        console.error("Please run the script like:\n\n> node genInputJson.js <ENTROPY_HEX_STR> <ARRAY_LEN> <EXTRA_ROUNDS> <MAX_EXTRA_ROUNDS>\n");
+        process.exit(1);
     }
     
-    const len = parseInt(process.argv[2], '10');
-    const entropy = parseInt(process.argv[3], '16');
-    const array = [...Array(len).keys()];
-    const permutationHistory = stepwiseFisherYates(entropy, array);
+    const entropy = parseInt(process.argv[2], '16');
+    const length = parseInt(process.argv[3], '10');
+    const extraRounds = parseInt(process.argv[4], '10');
+    const maxExtraRounds = parseInt(process.argv[5], '10');
+    
+    if ((extraRounds > length) || (extraRounds < 0)) {
+        console.error("Extra shuffling rounds must be in [0, the length of the array]");
+        process.exit(1);
+    }
+    
+    const array = [...Array(length).keys()].map((x) => (x+1));
+    const permutationHistory = stepwiseFisherYates(entropy, array, extraRounds, maxExtraRounds);
     
     const filePath = path.join(path.resolve("."), "circom", "mainCircuit.input.json");
        
@@ -47,7 +70,8 @@ async function main() {
         JSON.stringify(
         {
             "entropy": entropy,
-            "shuffleHistory": permutationHistory.arrayHistory
+            "shuffleHistory": permutationHistory.arrayHistory,
+            "extraRounds": extraRounds
         }
     ));
 }
