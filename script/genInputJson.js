@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 
 function stepwiseFisherYates(entropy, oldArray) {
     if (entropy === 0) {
@@ -7,12 +8,14 @@ function stepwiseFisherYates(entropy, oldArray) {
     }
     
     const newArray = Array.from(oldArray);
-    const stepwiseArray = Array();
+    const stepwiseArray = {"arrayHistory": [], "pivotHistory": []};
     
     for (let i = 0; i < newArray.length; i++) {
         const before = Array.from(newArray);
         const pivotIndex = i;
-        stepwiseArray.push([before, pivotIndex]);
+        
+        stepwiseArray.arrayHistory.push(before);
+        stepwiseArray.pivotHistory.push(pivotIndex);
         
         const j = i + entropy % (newArray.length - i);
         const temp = newArray[i];
@@ -20,23 +23,33 @@ function stepwiseFisherYates(entropy, oldArray) {
         newArray[j] = temp;
     }
     
-    stepwiseArray.push([newArray, newArray.length]);
+    stepwiseArray.arrayHistory.push(newArray);
+    stepwiseArray.pivotHistory.push(newArray.length);
     
     return stepwiseArray;
 }
 
 async function main() {
-    const e = 123456;
-    const a = [];
-    for (let i = 0; i < 50; i++) {
-        a.push(i);
+    if (process.argv.length !== 4) {
+        console.error("Please run the script like $ node genInputJson.js <ARRAY_LEN> <ENTROPY_HEX_STR>");
+        process.exit(1)
     }
     
-    fs.openSync("./circuits/input.json", "w+");
+    const len = parseInt(process.argv[2], '10');
+    const entropy = parseInt(process.argv[3], '16');
+    const array = [...Array(len).keys()];
+    const permutationHistory = stepwiseFisherYates(entropy, array);
+    
+    const filePath = path.join(path.resolve("."), "circom", "mainCircuit.input.json");
+       
     fs.writeFileSync(
-        "./circuits/input.json",
-        JSON.stringify(stepwiseFisherYates(e, a))
-    );
+        fs.openSync(filePath, "w+"),
+        JSON.stringify(
+        {
+            "entropy": entropy,
+            "shuffleHistory": permutationHistory.arrayHistory
+        }
+    ));
 }
 
 main()

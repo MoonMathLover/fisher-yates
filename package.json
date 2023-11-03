@@ -1,12 +1,11 @@
 {
+  "name": "fisher-yates",
+  "license": "GPL-3.0",
   "dependencies": {
     "snarkjs": "^0.7.1",
-    "zkey-manager": "^0.1.2"
+    "zkey-manager": "https://github.com/a2468834/zkey-manager"
   },
   "scripts": {
-    "compile": "yarn zkey-manager compile --config zkey.config.yml",
-    "download": "yarn zkey-manager downloadPtau --config zkey.config.yml",
-    "genZkeys": "yarn zkey-manager genZkeys --config zkey.config.yml",
-    "createProof": "yarn snarkjs groth16 fullprove input.json <path_to>.wasm <path_to>.zkey proof.json public.json"
+    "genInputJson": "node script/genInputJson.js 50 `head /dev/random | tr -dc a-f0-9 | head -c16`"
   }
 }

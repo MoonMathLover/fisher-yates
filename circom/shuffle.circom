@@ -9,6 +9,7 @@ template Shuffle(len) {
     signal input pivotIndex;
     signal input oldArray[len];
     signal input newArray[len];
+    signal input enableFlag;
     
     component nonZeroTest = IsZero();
     nonZeroTest.in <== entropy;
@@ -22,6 +23,9 @@ template Shuffle(len) {
     component mod = Modulo();
     mod.a <== entropy;
     mod.b <== (len - pivotIndex);
+    
+    // Limit `enableFlag` to 0/1
+    enableFlag * (1 - enableFlag) === 0;
     
     // Test the validity of swaping choosing by F-Y algorithm
     var i = pivotIndex;
@@ -51,6 +55,9 @@ template Shuffle(len) {
     }
     newArrayAtJ.index <== j;
     
-    oldArrayAtI.elementAtIndex === newArrayAtJ.elementAtIndex;
-    oldArrayAtJ.elementAtIndex === newArrayAtI.elementAtIndex;
+    signal equation1st <== oldArrayAtI.elementAtIndex - newArrayAtJ.elementAtIndex;
+    signal equation2nd <== oldArrayAtJ.elementAtIndex - newArrayAtI.elementAtIndex;
+    
+    equation1st * enableFlag === 0;
+    equation2nd * enableFlag === 0;
 }
