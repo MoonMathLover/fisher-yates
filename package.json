@@ -2,6 +2,9 @@
   "name": "fisher-yates",
   "license": "GPL-3.0",
   "dependencies": {
+    "dotenv": "^16.3.1",
+    "ethers": "<6.0.0",
+    "shelljs": "^0.8.5",
     "snarkjs": "^0.7.1",
     "zkey-manager": "https://github.com/a2468834/zkey-manager"
   },
