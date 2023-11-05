@@ -10,8 +10,8 @@ const contractABI     = [
     "function userContributeSwapTimes() external view returns (uint256)",
     "function randaoRandomness() external view returns (uint256)"
 ];
-const sepoliaRpcUrl   = "https://sepolia.gateway.tenderly.co";
-
+const sepoliaRpcUrl = "https://sepolia.gateway.tenderly.co";
+const goerliRpcUrl  = "https://goerli.gateway.tenderly.co";
 
 // Main function
 async function main() {
