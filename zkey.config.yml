@@ -13,7 +13,7 @@ circuits:
   inputJson: "./circom/mainCircuit.input.json"
   params: [50, 50]
   type: "zkPlayground"
-  pubInputs: ["entropy", "shuffleHistory"]
+  pubInputs: ["entropy", "extraRounds", "array"]
 
 # Powers of Tau ceremony file
 ptauFiles:

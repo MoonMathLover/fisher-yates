@@ -64,14 +64,20 @@ async function main() {
     const permutationHistory = stepwiseFisherYates(entropy, array, extraRounds, maxExtraRounds);
     
     const filePath = path.join(path.resolve("."), "circom", "mainCircuit.input.json");
-       
+    
+    const historySummary = [
+        permutationHistory.arrayHistory[0],
+        permutationHistory.arrayHistory[length + extraRounds - 1]
+    ];
+    
     fs.writeFileSync(
         fs.openSync(filePath, "w+"),
         JSON.stringify(
         {
             "entropy": entropy,
+            "extraRounds": extraRounds,
+            "array": historySummary,
             "shuffleHistory": permutationHistory.arrayHistory,
-            "extraRounds": extraRounds
         }
     ));
 }

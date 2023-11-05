@@ -9,7 +9,7 @@
     "zkey-manager": "https://github.com/a2468834/zkey-manager"
   },
   "scripts": {
-    "fromAtoZ": "yarn genInputJson; yarn compile; yarn downloadPtau; yarn genZkeys; yarn genProofsl yarn genVerifierSol; yarn genSolCalldata",
+    "fromAtoZ": "yarn genInputJson; yarn compile; yarn downloadPtau; yarn genZkeys; yarn genProofs; yarn genVerifierSol; yarn genSolCalldata",
     "genInputJson": "node script/genInputJson.js `head /dev/random | tr -dc a-f0-9 | head -c16` 50 3 50",
     "compile": "yarn zkey-manager compile -c zkey.config.yml",
     "downloadPtau": "yarn zkey-manager downloadPtau -c zkey.config.yml -nc",
